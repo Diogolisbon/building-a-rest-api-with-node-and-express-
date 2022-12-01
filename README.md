@@ -300,4 +300,191 @@ Again restart the server, add a new book, and open localhost/3000/{your_isbn} an
 **Deleting Books**
 
 When deleting entities, we typically delete them one by one to avoid big accidental data loss. To delete items, we use the HTTP DELETE method and specify a book using its ISBN number, just like how we retrieved it:
+   after **res.status(404).send('Book not found');
+});** in **book-api.js** add:
+
+app.delete('/book/:isbn', (req, res) => {
+    // Reading isbn from the URL
+    const isbn = req.params.isbn;
+
+    // Remove item from the books array
+    books = books.filter(i => {
+        if (i.isbn !== isbn) {
+            return true;
+        }
+        return false;
+    });
+
+    res.send('Book is deleted');
+});
+
+We are using the app.delete method to accept DELETE requests. We have also used the array filter method to filter out the book with the relevant ISBN to remove it from the array.
+
+Now let's implement the deleteBook method in the book-list.js file:
+
+const deleteBook = (isbn) => {
+    const xhttp = new XMLHttpRequest();
+
+    xhttp.open("DELETE", `http://localhost:3000/book/${isbn}`, false);
+    xhttp.send();
+
+    // Reloading the page
+    location.reload();
+}
+
+17 **Editing Books**
+
+Very similar to deleting entities, updating them requires us to snatch a specific one, based on the ISBN and then send either a POST or PUT HTTP call with the new information.
+
+Let's go back to our book-api.js file:
+
+app.post('/book/:isbn', (req, res) => {
+    // Reading isbn from the URL
+    const isbn = req.params.isbn;
+    const newBook = req.body;
+
+    // Remove item from the books array
+    for (let i = 0; i < books.length; i++) {
+        let book = books[i]
+        if (book.isbn === isbn) {
+            books[i] = newBook;
+        }
+    }
+
+    res.send('Book is edited');
+});
+Upon sending a POST request, aimed at a specific ISBN, the adequate book is updated with new information.
+
+Since we have already created the edit modal, we can use the setEditModal method to gather information about the book when "Edit" button is clicked.
+
+We will also set the form's action parameter with the clicked book's URL to send the request:
+
+const setEditModal = (isbn) => {
+    // Get information about the book using isbn
+    const xhttp = new XMLHttpRequest();
+
+    xhttp.open("GET", `http://localhost:3000/book/${isbn}`, false);
+    xhttp.send();
+
+    const book = JSON.parse(xhttp.responseText);
+
+    const {
+        title,
+        author,
+        publisher,
+        publish_date,
+        numOfPages
+    } = book;
+
+    // Filling information about the book in the form inside the modal
+    document.getElementById('isbn').value = isbn;
+    document.getElementById('title').value = title;
+    document.getElementById('author').value = author;
+    document.getElementById('publisher').value = publisher;
+    document.getElementById('publish_date').value = publish_date;
+    document.getElementById('numOfPages').value = numOfPages;
+
+    // Setting up the action url for the book
+    document.getElementById('editForm').action = `http://localhost:3000/book/${isbn}`;
+}
+
+18 Now lets go to the **book-list.js** and add:
+
+
+    const xhttp = new XMLHttpRequest();
+
+    xhttp.open("GET", `http://localhost:3000/book/${isbn}`, false);
+    xhttp.send();
+
+    const book = JSON.parse(xhttp.responseText);
+
+    const {
+        title,
+        author,
+        publisher,
+        publish_date,
+        numOfPages
+    } = book;
+
+    // Filling information about the book in the form inside the modal
+    document.getElementById('isbn').value = isbn;
+    document.getElementById('title').value = title;
+    document.getElementById('author').value = author;
+    document.getElementById('publisher').value = publisher;
+    document.getElementById('publish_date').value = publish_date;
+    document.getElementById('numOfPages').value = numOfPages;
+
+    // Setting up the action url for the book
+    document.getElementById('editForm').action = `http://localhost:3000/book/${isbn}`;
+}
+
+18 now lets divide our files in client and server side:
+
+19 create a new folder named Client and drag the **book-list.js** and **book-list.html** to this folder.
+
+20 inside de client sfolder create a new file **index.html** and add:
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Create New Book</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <hr>
+        <h1>Create New Book</h1>
+        <hr>
+
+        <form action="http://localhost:3000/book" method="POST">
+            <div class="form-group">
+                <label for="exampleInputPassword1">ISBN</label>
+                <input class="form-control" name="isbn">
+            </div>
+
+            <div class="form-group">
+                <label for="exampleInputPassword1">Title</label>
+                <input class="form-control" name="title">
+            </div>
+
+            <div class="form-group">
+                <label for="exampleInputPassword1">Author</label>
+                <input class="form-control" name="author">
+            </div>
+
+            <div class="form-group">
+                <label for="exampleInputPassword1">Published Date</label>
+                <input type="date" class="form-control" name="publish_date">
+            </div>
+
+            <div class="form-group">
+                <label for="exampleInputPassword1">Publisher</label>
+                <input class="form-control" name="publisher">
+            </div>
+
+            <div class="form-group">
+                <label for="exampleInputPassword1">Number Of Pages</label>
+                <input type="number" class="form-control" name="numOfPages">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</body>
+
+</html>
+
+22 Now create a new folder and name **Server**  and drag the files **book.api.js + hello-world.js + package-lock.json + package.json** onto it.
+
+23 **Conclusion**
+That's how easy it is to build a REST API using Node.js and Express. You can visit the official Express documentation to learn more about the framework if you are interested.
+
+Also, the code that I have provided is just for the sake of the tutorial, you should never use it in a production environment. Make sure you validate data and follow best practices when you write code for production.
+   
 
