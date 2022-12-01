@@ -147,10 +147,10 @@ app.post('/book', (req, res) => {
     res.send('Book is added to the database');
 });
 
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ADD HERE :
+ ADD HERE :
  **app.get('/book', (req, res) => {**
     **res.json(books);**
-**});** <<<<<<<<<<<<<<<<<<<<<<<<
+**});** 
 
 app.listen(port, () => console.log(`Hello world app listening on port ${port}!`));
 
@@ -270,10 +270,10 @@ app.get('/book', (req, res) => {
     res.json(books);
 });
 
->>>>>>>>>>>>>>>>> **app.get('/book/:isbn', (req, res) => {**
+ **app.get('/book/:isbn', (req, res) => {**
     **// Reading isbn from the URL**
     **const isbn = req.params.isbn;**
-});** <<<<<<<<<<<<<<<<<<<<<<
+});** 
 
 Here, we're introduced to parametrized URLs. Since the ISBN depends on the book, there's potentially an infinite number of endpoints here. By adding a colon (:) to the path, we can define a variable, mapped to the variable isbn. So, if a user visits localhost:3000/book/5 the isbn parameter will be 5.
 
